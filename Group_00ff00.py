@@ -77,15 +77,15 @@ class RunnerConfig:
         Invoked only once during the lifetime of the program."""
         output.console_log("warming up experiment")
         
-        proc = subprocess.Popen(['npm', 'run', 'energy', 'H-MN', 'Claude', '1', '--prefix', '/home/jeremy/Documents/grad/greenlab/green-lab'], start_new_session=True)
+        proc = subprocess.Popen(['npm', 'run', 'energy', 'H-MN', 'Claude', '1', '--prefix', '/home/jeremy/Documents/grad/greenlab/green-lab'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         time.sleep(60)
         proc.kill()
                 
-        proc = subprocess.Popen(['npm', 'run', 'energy', 'M-CS', 'Gemini', '2', '--prefix', '/home/jeremy/Documents/grad/greenlab/green-lab'], start_new_session=True)
+        proc = subprocess.Popen(['npm', 'run', 'energy', 'M-CS', 'Gemini', '2', '--prefix', '/home/jeremy/Documents/grad/greenlab/green-lab'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         time.sleep(60)
         proc.kill()
 
-        proc = subprocess.Popen(['npm', 'run', 'energy', 'E-UE', 'ChatGPT', '0', '--prefix', '/home/jeremy/Documents/grad/greenlab/green-lab'], start_new_session=True)
+        proc = subprocess.Popen(['npm', 'run', 'energy', 'E-UE', 'ChatGPT', '0', '--prefix', '/home/jeremy/Documents/grad/greenlab/green-lab'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         time.sleep(60)
         proc.kill()
 
