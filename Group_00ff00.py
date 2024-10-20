@@ -63,7 +63,7 @@ class RunnerConfig:
         iteration = FactorModel("iteration", ['0', '1', '2'])
         self.run_table_model = RunTableModel(
             factors=[problem, llm, iteration],
-            repetitions = 1,
+            repetitions = 20,
             data_columns=['dram_energy', 'package_energy',
                           'pp0_energy', 'pp1_energy', 'log_energy', 'log_time', 'log_exec'],
             shuffle=True
