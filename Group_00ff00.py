@@ -63,9 +63,9 @@ class RunnerConfig:
         iteration = FactorModel("iteration", ['0', '1', '2'])
         self.run_table_model = RunTableModel(
             factors=[problem, llm, iteration],
-            repetitions = 10,
+            repetitions = 1,
             data_columns=['dram_energy', 'package_energy',
-                          'pp0_energy', 'pp1_energy', 'log_energy', 'log'],
+                          'pp0_energy', 'pp1_energy', 'log_energy', 'log_time', 'log_exec'],
             shuffle=True
 
         )
@@ -77,17 +77,17 @@ class RunnerConfig:
         Invoked only once during the lifetime of the program."""
         output.console_log("warming up experiment")
         
-        # proc = subprocess.Popen(['npm', 'run', 'energy', 'H-MN', 'Claude', '1', '--prefix', '/home/jeremy/Documents/grad/greenlab/green-lab'], start_new_session=True)
-        # time.sleep(60)
-        # proc.kill()
+        proc = subprocess.Popen(['npm', 'run', 'energy', 'H-MN', 'Claude', '1', '--prefix', '/home/jeremy/Documents/grad/greenlab/green-lab'], start_new_session=True)
+        time.sleep(60)
+        proc.kill()
                 
-        # proc = subprocess.Popen(['npm', 'run', 'energy', 'M-CS', 'Gemini', '2', '--prefix', '/home/jeremy/Documents/grad/greenlab/green-lab'], start_new_session=True)
-        # time.sleep(60)
-        # proc.kill()
+        proc = subprocess.Popen(['npm', 'run', 'energy', 'M-CS', 'Gemini', '2', '--prefix', '/home/jeremy/Documents/grad/greenlab/green-lab'], start_new_session=True)
+        time.sleep(60)
+        proc.kill()
 
-        # proc = subprocess.Popen(['npm', 'run', 'energy', 'E-UE', 'ChatGPT', '0', '--prefix', '/home/jeremy/Documents/grad/greenlab/green-lab'], start_new_session=True)
-        # time.sleep(60)
-        # proc.kill()
+        proc = subprocess.Popen(['npm', 'run', 'energy', 'E-UE', 'ChatGPT', '0', '--prefix', '/home/jeremy/Documents/grad/greenlab/green-lab'], start_new_session=True)
+        time.sleep(60)
+        proc.kill()
 
 
     def before_run(self) -> None:
@@ -126,7 +126,6 @@ class RunnerConfig:
         # Another example would be to wait for the target to finish, e.g. via `self.target.wait()`
         output.console_log("Running program for 60 seconds")
         time.sleep(60)
-
     def stop_measurement(self, context: RunnerContext) -> None:
         """Perform any activity here required for stopping measurements."""
         self.profiler.wait()
@@ -150,10 +149,14 @@ class RunnerConfig:
 
         slog = execution_log.decode("utf-8").split(" ")
         log_energy = ""
+        log_time = ""
+        log_exec = ""
         for x in range(len(slog)):
             if slog[x] == "joules:":
-                print(slog[x], slog[x+1])
                 log_energy = slog[x+1]
+                log_time = slog[x+3]
+                log_exec = slog[x-5]
+                print(slog[x], slog[x+1], "time", slog[x+3], slog[x-7], log_exec)
 
         df = pd.read_csv(context.run_dir / f"energibridge.csv")
         run_data = {
@@ -162,8 +165,12 @@ class RunnerConfig:
                 'pp0_energy'    : round(df['PP0_ENERGY (J)'].sum(), 3),
                 'pp1_energy'    : round(df['PP1_ENERGY (J)'].sum(), 3),
                 'log_energy'    : log_energy,
-                'log'           : execution_log,
+                'log_time'      : log_time,
+                'log_exec'      : log_exec,
         }
+
+        energibridge_log = open(f'{context.run_dir}/energibridge.log', 'w')
+        energibridge_log.write(execution_log.decode('utf-8'))
         return run_data
 
     def after_experiment(self) -> None:
