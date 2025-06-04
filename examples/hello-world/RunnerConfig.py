@@ -10,14 +10,6 @@ from typing import Dict, List, Any, Optional
 from pathlib import Path
 from os.path import dirname, realpath
 
-from Plugins.Profilers import CodecarbonWrapper
-from Plugins.Profilers.CodecarbonWrapper import DataColumns as CCDataCols
-
-@CodecarbonWrapper.emission_tracker(
-    data_columns=[CCDataCols.EMISSIONS, CCDataCols.ENERGY_CONSUMED],
-    country_iso_code="NLD" # your country code
-)
-
 
 class RunnerConfig:
     ROOT_DIR = Path(dirname(realpath(__file__)))
@@ -65,7 +57,7 @@ class RunnerConfig:
         factor2 = FactorModel("example_factor2", [True, False])
         self.run_table_model = RunTableModel(
             factors=[factor1, factor2],
-            exclude_variations=[
+            exclude_combinations=[
                 {factor1: ['example_treatment1']},                   # all runs having treatment "example_treatment1" will be excluded
                 {factor1: ['example_treatment2'], factor2: [True]},  # all runs having the combination ("example_treatment2", True) will be excluded
             ],
